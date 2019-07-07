@@ -5,7 +5,7 @@
 ;; Version: 0.1
 ;; Author: Paul Landes
 ;; Maintainer: Paul Landes
-;; Keywords: mark point
+;; Keywords: mark point lisp
 ;; URL: https://github.com/plandes/mark-thing-at
 ;; Package-Requires: ((emacs "26"))
 
@@ -32,7 +32,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 (require 'thingatpt)
 (require 'choice-program)
 
@@ -93,22 +93,20 @@ corresponds to its respective mark command."))))
 (defun mark-thing-at-keybindings-help ()
   "Create a help buffer containing all mark-* functions with key bindings."
   (interactive)
-  (save-excursion
-    (set-buffer (get-buffer-create "*Mark Thing Help*"))
-    (setq buffer-read-only nil)
-    (erase-buffer)
-    (dolist (elt (mark-thing-at-attribs))
-      (let ((name (cdr (assq 'name elt)))
-	    (mark-func (cdr (assq 'mark-func elt)))
-	    (binding-func (cdr (assq 'binding-func elt))))
-	(where-is binding-func t)
-	(newline)))
-    (set-buffer-modified-p nil)
-    (setq buffer-read-only t)
-    (beginning-of-buffer)
-    (display-buffer (current-buffer))))
+  (with-current-buffer (get-buffer-create "*Mark Thing Help*")
+    (save-excursion
+      (setq buffer-read-only nil)
+      (erase-buffer)
+      (dolist (elt (mark-thing-at-attribs))
+	(let ((binding-func (cdr (assq 'binding-func elt))))
+	  (where-is binding-func t)
+	  (newline)))
+      (set-buffer-modified-p nil)
+      (setq buffer-read-only t)
+      (goto-char (point-min))
+      (display-buffer (current-buffer)))))
 
-(defun make-thing-at-oplist (long-options)
+(defun mark-thing-at-make-oplist (long-options)
   "Return an alist useful for making unique keys for options or key bindings.
 
 An alist of \(LONG-OPTION . OPTION-CHAR) conses is returned.
@@ -121,11 +119,12 @@ strings."
       (setq ualist
 	    (append ualist
 		    (list
-		     (block uas
+		     (cl-block 'uas
 		       (dolist (option-char (string-to-list option))
 			 (when (not (gethash option-char uhash))
 			   (puthash option-char t uhash)
-			   (return-from uas (cons option option-char)))))))))
+			   (cl-return-from 'uas
+			     (cons option option-char)))))))))
     ualist))
 
 (defun mark-thing-at-make-keybindings (prefix)
@@ -133,10 +132,10 @@ strings."
 PREFIX is the key used for the keybinding using `global-set-key'.
 The functions are dynamically created with
 `mark-thing-at-thing-to-command-alist'."
-  (let ((option-alist (make-thing-at-oplist
+  (let ((option-alist (mark-thing-at-make-oplist
 		       (mapcar #'symbol-name mark-thing-at-choices)))
 	(mark-keymap (make-sparse-keymap))
-	command char-bind)
+	command)
     (global-set-key prefix mark-keymap)
     (dolist (elt option-alist)
       (setq command (cdr (assq (intern (car elt))
@@ -144,10 +143,9 @@ The functions are dynamically created with
       (define-key mark-keymap (char-to-string (cdr elt)) command))
     (define-key mark-keymap "?" 'mark-thing-at-keybindings-help)))
 
-
 
 ;;; amended basic types
-(defun beginning-of-number ()
+(defun mark-thing-at-beginning-of-number ()
   "Go to the position of beginning of the number at the cursor."
   (let ((regexp "[0-9\.-]"))
     (save-match-data
@@ -155,12 +153,12 @@ The functions are dynamically created with
       (if (or (looking-at regexp)
 	      (re-search-backward regexp nil t))
 	  (skip-chars-backward regexp)))))
-(put 'number 'beginning-op 'beginning-of-number)
+(put 'number 'beginning-op 'mark-thing-at-beginning-of-number)
 
-(defun end-of-number ()
+(defun mark-thing-at-end-of-number ()
   "Go to the position of end of the number at the cursor."
   (save-match-data (re-search-forward "[0-9.-]+" nil t)))
-(put 'number 'end-op 'end-of-number)
+(put 'number 'end-op 'mark-thing-at-end-of-number)
 
 ;; don't span the next line like the default 'line thing
 (put 'line-this 'beginning-op #'(lambda () (beginning-of-line)))
