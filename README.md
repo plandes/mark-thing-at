@@ -1,10 +1,10 @@
-# This is a really more of a convenience for `things' in thingatpt.el
+# Mark a pattern at the current point
 
 [![MELPA badge][melpa-badge]][melpa-link]
 [![MELPA stable badge][melpa-stable-badge]][melpa-stable-link]
 [![Travis CI Build Status][travis-badge]][travis-link]
 
-WRITE ME
+This is a really more of a convenience for *things* in `thingatpt.el`.
 
 
 ## License
