@@ -1,0 +1,11 @@
+*.elc
+index.text
+archive
+reference
+attic
+patches
+extra
+/.cask
+/dist
+/elpa
+/doc
