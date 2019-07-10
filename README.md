@@ -1,4 +1,4 @@
-# Mark a pattern at the current point
+# Mark a pattern at the current point.
 
 [![MELPA badge][melpa-badge]][melpa-link]
 [![MELPA stable badge][melpa-stable-badge]][melpa-stable-link]
