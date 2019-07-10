@@ -79,7 +79,7 @@ bounds.  Also see `thing-at-point' and \`mark-thing-at-choices'."
 
 ;;;###autoload
 (defun mark-thing-at-make-functions ()
-  "Create function for each choice with names `mark-*' (i.e. mark-filename).
+  "Create function for each choice with names `mark-*' (i.e. `mark-filename').
 If this name is already that of a bound function, use `mark-*-thing'."
   (let (func-alist)
     (dolist (elt (mark-thing-at-attribs))
