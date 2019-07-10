@@ -33,15 +33,15 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl-lib))
-(require 'thingatpt)
+(require 'bthingatpt)
 (require 'choice-program)
 
 ;; created dynamically by `mark-thing-at-make-functions'
 (defvar mark-thing-at-thing-to-command-alist)
 
 (defvar mark-thing-at-choices
-  '(symbol number line-this line list sexp defun filename url word sentence
-	   whitespace page java-expression)
+  '(symbol number line-this line list sexp defun
+	   filename url word sentence whitespace page)
   "A list of symbols one can use to query with `thing-at-point'.
 It is also used for functions such as `bounds-of-thing-at-point'.")
 
@@ -90,21 +90,26 @@ If this name is already that of a bound function, use `mark-*-thing'."
 	"An alist of conses with the form `(THING . MARK-COMMAND)'.  Each thing
 corresponds to its respective mark command."))))
 
-(defun mark-thing-at-keybindings-help ()
-  "Create a help buffer containing all mark-* functions with key bindings."
-  (interactive)
-  (with-current-buffer (get-buffer-create "*Mark Thing Help*")
-    (save-excursion
-      (setq buffer-read-only nil)
-      (erase-buffer)
-      (dolist (elt (mark-thing-at-attribs))
-	(let ((binding-func (cdr (assq 'binding-func elt))))
-	  (where-is binding-func t)
-	  (newline)))
-      (set-buffer-modified-p nil)
-      (setq buffer-read-only t)
-      (goto-char (point-min))
-      (display-buffer (current-buffer)))))
+(defun mark-thing-at-keybindings-help (&optional bindingp)
+  "Create a help buffer containing all mark-* functions with key bindings.
+BINDINGP set to non-nil or adding the \\[universal-arg] interactively gives the
+binding function usage, which provides aliases as well."
+  (interactive "P")
+  (let ((key (if bindingp
+		 'binding-func
+	       'mark-func)))
+   (with-current-buffer (get-buffer-create "*Mark Thing Help*")
+     (save-excursion
+       (setq buffer-read-only nil)
+       (erase-buffer)
+       (dolist (elt (mark-thing-at-attribs))
+	 (let ((binding-func (cdr (assq key elt))))
+	   (where-is binding-func t)
+	   (newline)))
+       (set-buffer-modified-p nil)
+       (setq buffer-read-only t)
+       (goto-char (point-min))
+       (display-buffer (current-buffer))))))
 
 (defun mark-thing-at-make-oplist (long-options)
   "Return an alist useful for making unique keys for options or key bindings.
