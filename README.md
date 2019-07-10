@@ -4,8 +4,8 @@
 [![MELPA stable badge][melpa-stable-badge]][melpa-stable-link]
 [![Travis CI Build Status][travis-badge]][travis-link]
 
-This is a really more of a convenience for *things* in `thingatpt.el`.  The
-library adds on functionality that:
+This package tracks and creates bindings for region marking functions found in
+`thingatpt.el`.  The library adds on functionality that:
 
 * Generates functions that marks *things* (per the parlance of `thingatpt.el`
   library.

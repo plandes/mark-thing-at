@@ -2,11 +2,11 @@
 (source gnu)
 (source melpa)
 
-(package-file "mark-thing-at.el")
-
 (depends-on "dash" "2.13.0")
-(depends-on "choice-program" "0.5")
+(depends-on "choice-program" "0.8")
 (depends-on "package-lint")
+
+(package-file "mark-thing-at.el")
 
 (files "*.el" "doc/*.texi" (:exclude ".dir-locals.el"))
 
