@@ -7,7 +7,7 @@
 ;; Maintainer: Paul Landes
 ;; Keywords: mark point lisp
 ;; URL: https://github.com/plandes/mark-thing-at
-;; Package-Requires: ((emacs "26"))
+;; Package-Requires: ((emacs "26") (choice-program "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
