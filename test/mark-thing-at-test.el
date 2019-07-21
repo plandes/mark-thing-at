@@ -23,7 +23,7 @@
 
 (ert-deftest test-function-binding ()
   "Test excercise keybindings."
-  (should (mark-thing-at-make-keybindings "\C-xm")))
+  (should (mark-thing-at-bind)))
 
 (provide 'mark-thing-at-test)
 

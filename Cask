@@ -3,7 +3,7 @@
 (source melpa)
 
 (depends-on "dash" "2.13.0")
-(depends-on "choice-program" "0.5")
+(depends-on "choice-program" "0.9")
 (depends-on "package-lint")
 
 (package-file "mark-thing-at.el")

@@ -7,7 +7,7 @@
 ;; Maintainer: Paul Landes
 ;; Keywords: mark point lisp
 ;; URL: https://github.com/plandes/mark-thing-at
-;; Package-Requires: ((emacs "26") (choice-program "0.5"))
+;; Package-Requires: ((emacs "26") (choice-program "0.9"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -44,17 +44,39 @@
 (require 'thingatpt)
 (require 'choice-program)
 
-;; created dynamically by `mark-thing-at-make-functions'
-(defvar mark-thing-at-thing-to-command-alist)
-
 (defvar mark-thing-at-choices
   '(symbol number line-this line list sexp defun
 	   filename url word sentence whitespace page)
   "A list of symbols one can use to query with `thing-at-point'.
 It is also used for functions such as `bounds-of-thing-at-point'.")
 
+(defvar mark-thing-at-thing-to-command-alist nil
+  "An alist of conses with the form `(THING . MARK-COMMAND)'.
+Each thing corresponds to its respective mark command.
+This is set dynamically by `mark-thing-at-make-functions'.")
+
+(defvar mark-thing-at-mode-map (make-sparse-keymap)
+  "Keymap of command `mark-thing-at-mode'.")
+
+(defgroup mark-thing-at nil
+  "Mark a pattern at the current point."
+  :group 'text)
+
+(defcustom mark-thing-at-keymap-prefix
+  (kbd "C-x m")
+  "Prefix of the keymap used for marking `things' at point.
+The default binding clobbers `compose-mail'."
+  :group 'mark-thing-at
+  :type 'string
+  :set (lambda (variable key)
+	 (when (boundp variable)
+	   (define-key mark-thing-at-mode-map (symbol-value variable) nil))
+	 (set-default variable key)
+	 (when (fboundp 'mark-thing-at-bind)
+	   (mark-thing-at-bind))))
+
 ;;;###autoload
-(defun mark-thing-at (thing)
+(defun mark-thing-at-point (thing)
   "Mark THING \(symbol) at current point.
 See function \`bounds-of-thing-at-point' for posibilities of
 THING.  This function is also used to for the new region's
@@ -80,7 +102,7 @@ bounds.  Also see `thing-at-point' and \`mark-thing-at-choices'."
 
 ;;;###autoload
 (defun mark-thing-at-make-functions ()
-  "Create function for each choice with names `mark-*' (i.e. `mark-filename').
+  "Create function for each choice with names `mark-*' \\(i.e. `mark-filename').
 If this name is already that of a bound function, use `mark-*-thing'."
   (let (func-alist)
     (dolist (elt (mark-thing-at-attribs))
@@ -88,38 +110,16 @@ If this name is already that of a bound function, use `mark-*-thing'."
 	    (mark-func (cdr (assq 'mark-func elt)))
 	    (binding-func (cdr (assq 'binding-func elt)))
 	    fname)
-	(setq fname (when (fboundp mark-func)
-		      binding-func mark-func))
+	(setq fname (if (fboundp mark-func)
+			binding-func
+		      mark-func))
 	(eval `(defun ,fname ()
 		 ,(format "Mark the current %S at point." name)
 		 (interactive)
-		 (mark-thing-at (quote ,name))
+		 (mark-thing-at-point (quote ,name))
 		 (message ,(format "Marked %S" name))))
 	(setq func-alist (append func-alist (list (cons name fname)))))
-      (defconst mark-thing-at-thing-to-command-alist func-alist
-	"An alist of conses with the form `(THING . MARK-COMMAND)'.  Each thing
-corresponds to its respective mark command."))))
-
-(defun mark-thing-at-keybindings-help (&optional bindingp)
-  "Create a help buffer containing all mark-* functions with key bindings.
-BINDINGP set to non-nil or adding the \\[universal-arg] interactively gives the
-binding function usage, which provides aliases as well."
-  (interactive "P")
-  (let ((key (if bindingp
-		 'binding-func
-	       'mark-func)))
-    (with-current-buffer (get-buffer-create "*Mark Thing Help*")
-      (save-excursion
-	(setq buffer-read-only nil)
-	(erase-buffer)
-	(dolist (elt (mark-thing-at-attribs))
-	  (let ((binding-func (cdr (assq key elt))))
-	    (where-is binding-func t)
-	    (newline)))
-	(set-buffer-modified-p nil)
-	(setq buffer-read-only t)
-	(goto-char (point-min))
-	(display-buffer (current-buffer))))))
+      (setq mark-thing-at-thing-to-command-alist func-alist))))
 
 (defun mark-thing-at-make-oplist (long-options)
   "Return an alist useful for making unique keys for options or key bindings.
@@ -142,21 +142,20 @@ strings."
 			     (cons option option-char)))))))))
     ualist))
 
-(defun mark-thing-at-make-keybindings (prefix)
+(defun mark-thing-at-bind ()
   "Create keybindings for the mark-* functions.
 PREFIX is the key used for the keybinding using `global-set-key'.
 The functions are dynamically created with
 `mark-thing-at-thing-to-command-alist'."
   (let ((option-alist (mark-thing-at-make-oplist
 		       (mapcar #'symbol-name mark-thing-at-choices)))
-	(mark-keymap (make-sparse-keymap))
+	(keymap (make-sparse-keymap))
 	command)
-    (global-set-key prefix mark-keymap)
     (dolist (elt option-alist)
       (setq command (cdr (assq (intern (car elt))
 			       mark-thing-at-thing-to-command-alist)))
-      (define-key mark-keymap (char-to-string (cdr elt)) command))
-    (define-key mark-keymap "?" 'mark-thing-at-keybindings-help)))
+      (define-key keymap (char-to-string (cdr elt)) command))
+    (define-key mark-thing-at-mode-map mark-thing-at-keymap-prefix keymap)))
 
 
 ;;; amended basic types
@@ -179,9 +178,30 @@ The functions are dynamically created with
 (put 'line-this 'beginning-op #'(lambda () (beginning-of-line)))
 (put 'line-this 'end-op #'(lambda () (end-of-line)))
 
-;; create the functions, let the user call `mark-thing-at-make-keybindings' if
-;; they choose
 (mark-thing-at-make-functions)
+
+;;;###autoload
+(define-minor-mode mark-thing-at-mode
+   "Minor mode for on-the-fly syntax checking.
+
+When called interactively, toggle `mark-thing-at-mode'.  With
+prefix ARG, enable `mark-thing-at-mode' if ARG is positive,
+otherwise disable it.
+
+When called from Lisp, enable `mark-thing-at-mode' if ARG is
+omitted, nil or positive.  If ARG is `toggle', toggle
+`mark-thing-at-mode'.  Otherwise behave as if called
+interactively.
+
+When turned on, bind keys to a set of function that mark a
+pattern at the current point.  These patterns include symbols,
+URLs, files, etc.
+
+\\{mark-thing-at-mode-map}"
+  :group 'mark-thing-at
+  :keymap mark-thing-at-mode-map
+  :global t
+  (mark-thing-at-bind))
 
 (provide 'mark-thing-at)
 
