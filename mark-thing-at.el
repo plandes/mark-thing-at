@@ -61,10 +61,11 @@ THING.  This function is also used to for the new region's
 bounds.  Also see `thing-at-point' and \`mark-thing-at-choices'."
   (interactive (list (choice-program-complete "Mark thing: "
 					     mark-thing-at-choices)))
-  (if (not (memq thing mark-thing-at-choices))
-      (error "Unknown thing to query: %S" thing))
+  (when (not (memq thing mark-thing-at-choices))
+    (error "Unknown thing to query: %S" thing))
   (let ((bounds (bounds-of-thing-at-point thing)))
-    (if (null bounds) (error "No `%S' at point" thing))
+    (when (null bounds)
+      (error "No `%S' at point" thing))
     (goto-char (car bounds))
     (push-mark nil t t)
     (goto-char (cdr bounds))))
@@ -87,7 +88,8 @@ If this name is already that of a bound function, use `mark-*-thing'."
 	    (mark-func (cdr (assq 'mark-func elt)))
 	    (binding-func (cdr (assq 'binding-func elt)))
 	    fname)
-	(setq fname (if (fboundp mark-func) binding-func mark-func))
+	(setq fname (when (fboundp mark-func)
+		      binding-func mark-func))
 	(eval `(defun ,fname ()
 		 ,(format "Mark the current %S at point." name)
 		 (interactive)
@@ -163,9 +165,9 @@ The functions are dynamically created with
   (let ((regexp "[0-9\.-]"))
     (save-match-data
       (skip-chars-backward regexp)
-      (if (or (looking-at regexp)
-	      (re-search-backward regexp nil t))
-	  (skip-chars-backward regexp)))))
+      (when (or (looking-at regexp)
+		(re-search-backward regexp nil t))
+	(skip-chars-backward regexp)))))
 (put 'number 'beginning-op 'mark-thing-at-beginning-of-number)
 
 (defun mark-thing-at-end-of-number ()
