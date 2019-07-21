@@ -108,18 +108,18 @@ binding function usage, which provides aliases as well."
   (let ((key (if bindingp
 		 'binding-func
 	       'mark-func)))
-   (with-current-buffer (get-buffer-create "*Mark Thing Help*")
-     (save-excursion
-       (setq buffer-read-only nil)
-       (erase-buffer)
-       (dolist (elt (mark-thing-at-attribs))
-	 (let ((binding-func (cdr (assq key elt))))
-	   (where-is binding-func t)
-	   (newline)))
-       (set-buffer-modified-p nil)
-       (setq buffer-read-only t)
-       (goto-char (point-min))
-       (display-buffer (current-buffer))))))
+    (with-current-buffer (get-buffer-create "*Mark Thing Help*")
+      (save-excursion
+	(setq buffer-read-only nil)
+	(erase-buffer)
+	(dolist (elt (mark-thing-at-attribs))
+	  (let ((binding-func (cdr (assq key elt))))
+	    (where-is binding-func t)
+	    (newline)))
+	(set-buffer-modified-p nil)
+	(setq buffer-read-only t)
+	(goto-char (point-min))
+	(display-buffer (current-buffer))))))
 
 (defun mark-thing-at-make-oplist (long-options)
   "Return an alist useful for making unique keys for options or key bindings.
