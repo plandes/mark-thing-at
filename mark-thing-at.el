@@ -180,9 +180,19 @@ The functions are dynamically created with
 
 (mark-thing-at-make-functions)
 
+
+
 ;;;###autoload
 (define-minor-mode mark-thing-at-mode
-   "Minor mode for on-the-fly syntax checking.
+   "Minor mode for region marking functions found in
+`thingatpt'.  The library adds on functionality that:
+
+* Generates functions that marks *things* (per the parlance of `thingatpt'
+  library.
+* Creates a mode-map and bindings to make it easy to mark (create a region
+  around) a word, URL, file, number, symbol etc (see the [usage](#usage)
+  section).
+* Adds a *number thing*, which allows for traversing and marking numbers.
 
 When called interactively, toggle `mark-thing-at-mode'.  With
 prefix ARG, enable `mark-thing-at-mode' if ARG is positive,
