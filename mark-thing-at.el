@@ -63,7 +63,7 @@ This is set dynamically by `mark-thing-at-make-functions'.")
   :group 'text)
 
 (defcustom mark-thing-at-keymap-prefix
-  (kbd "C-x m")
+  "C-x m"
   "Prefix of the keymap used for marking `things' at point.
 The default binding clobbers `compose-mail'."
   :group 'mark-thing-at
@@ -82,7 +82,7 @@ See function \`bounds-of-thing-at-point' for posibilities of
 THING.  This function is also used to for the new region's
 bounds.  Also see `thing-at-point' and \`mark-thing-at-choices'."
   (interactive (list (choice-program-complete "Mark thing: "
-					     mark-thing-at-choices)))
+					      mark-thing-at-choices)))
   (when (not (memq thing mark-thing-at-choices))
     (error "Unknown thing to query: %S" thing))
   (let ((bounds (bounds-of-thing-at-point thing)))
@@ -155,7 +155,8 @@ The functions are dynamically created with
       (setq command (cdr (assq (intern (car elt))
 			       mark-thing-at-thing-to-command-alist)))
       (define-key keymap (char-to-string (cdr elt)) command))
-    (define-key mark-thing-at-mode-map mark-thing-at-keymap-prefix keymap)))
+    (define-key mark-thing-at-mode-map
+      (kbd mark-thing-at-keymap-prefix) keymap)))
 
 
 ;;; amended basic types

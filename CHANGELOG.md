@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- Fixed documentation for setting the keymap prefix.
+- The keymap prefix is now easier to configure.
+
+
 ## [0.0.1] - 2019-07-07
 ### Added
 - Initial version.

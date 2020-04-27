@@ -34,11 +34,14 @@ Activate and enable it in your `~/.emacs` file:
 ```emacs-lisp
 ;; this also creates mark commands for each thing
 (require 'mark-thing-at)
-;; clobbers `compose-mail', makes the binding the prefix key
-(mark-thing-at-make-keybindings "\C-xm")
 ```
 
-This binds all `mark-thing-at` functions to `C-x m`.
+This binds all `mark-thing-at` functions to `C-x m`, which is the default
+prefix.  If you do not like this prefix, you can change it by customizing
+`mark-thing-at-keymap-prefix`.
+
+To do this, use: `M-x customize-variable mark-thing-at-keymap-prefix`.  Once
+you save the customization, the change immediately takes effect.
 
 
 ## Usage
@@ -67,7 +70,7 @@ functions and what they mark:
 
 ## License
 
-Copyright (c) 2019 Paul Landes
+Copyright (c) 2019 - 2020 Paul Landes
 
 GNU Lesser General Public License, Version 2.0
 
