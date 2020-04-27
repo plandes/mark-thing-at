@@ -1,16 +1,25 @@
-language: emacs-lisp
+dist: trusty
 
-cache: apt
-
-before_install:
-  - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > travis.sh && source ./travis.sh
-  - evm install $EVM_EMACS --use --skip
-
-install:
-  - cask install
+language: generic
+sudo: false
 
 env:
-  - EVM_EMACS=emacs-26.2-travis
+  matrix:
+    - EMACS_VERSION=26.2-min
+
+matrix:
+  allow_failures:
+    - env: EMACS_VERSION=emacs-snapshot
+
+# Ref: https://gist.github.com/rejeep/ebcd57c3af83b049833b
+install:
+  - export PATH="/home/travis/.evm/bin:$PATH"
+  - export PATH="/home/travis/.cask/bin:$PATH"
+
+  - git clone https://github.com/rejeep/evm.git /home/travis/.evm
+  - evm config path /tmp
+  - evm install emacs-26.2-travis --use --skip
+  - curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 
 script:
   - cask --version
