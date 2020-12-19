@@ -2,7 +2,7 @@
 
 [![MELPA badge][melpa-badge]][melpa-link]
 [![MELPA stable badge][melpa-stable-badge]][melpa-stable-link]
-[![Travis CI Build Status][travis-badge]][travis-link]
+[![Build Status][build-badge]][build-link]
 
 This package tracks and creates bindings for region marking functions found in
 `thingatpt.el`.  The library adds on functionality that:
@@ -80,7 +80,7 @@ GNU Lesser General Public License, Version 2.0
 [melpa-stable-link]: https://stable.melpa.org/#/mark-thing-at
 [melpa-badge]: https://melpa.org/packages/mark-thing-at-badge.svg
 [melpa-stable-badge]: https://stable.melpa.org/packages/mark-thing-at-badge.svg
-[travis-link]: https://travis-ci.org/plandes/mark-thing-at
-[travis-badge]: https://travis-ci.org/plandes/mark-thing-at.svg?branch=master
+[build-badge]: https://github.com/plandes/mark-thing-at/workflows/CI/badge.svg
+[build-link]: https://github.com/plandes/mark-thing-at/actions
 
 [melpa]: https://melpa.org/

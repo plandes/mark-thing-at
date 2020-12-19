@@ -2,12 +2,12 @@
 
 ;; Copyright (C) 2019 Paul Landes
 
-;; Version: 0.1
+;; Version: 0.3
 ;; Author: Paul Landes
 ;; Maintainer: Paul Landes
 ;; Keywords: mark point lisp
 ;; URL: https://github.com/plandes/mark-thing-at
-;; Package-Requires: ((emacs "26") (choice-program "0.9"))
+;; Package-Requires: ((emacs "26") (choice-program "0.13"))
 
 ;; This file is not part of GNU Emacs.
 

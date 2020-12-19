@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.0.3] - 2020-12-18
+### Changed
+- Updated dependencies.
+- Switched from Travis to GitHub workflows.
+
+
 ## [0.0.2] - 2020-04-27
 ### Changed
 - Fixed documentation for setting the keymap prefix.
@@ -20,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/mark-thing-at/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/plandes/mark-thing-at/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/plandes/mark-thing-at/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/plandes/mark-thing-at/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/plandes/mark-thing-at/compare/v0.0.0...v0.0.1
