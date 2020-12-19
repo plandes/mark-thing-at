@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    paths-ignore:
+    - '**.md'
+    - 'doc/*'
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_version:
+          - 27.1
+    steps:
+    - name: Checkout reposistory
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+        architecture: 'x64'
+
+    - uses: purcell/setup-emacs@master
+      with:
+        version: ${{ matrix.emacs_version }}
+
+    - name: Setup Cask
+      uses: conao3/setup-cask@master
+      with:
+        version: 'snapshot'
+
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@master
+
+    - name: Run tests
+      run: 'make test'
