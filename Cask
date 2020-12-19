@@ -1,6 +1,6 @@
 ;; -*- emacs-lisp -*-
 (source gnu)
-(source melpa)
+(source melpa-stable)
 
 (depends-on "choice-program" "0.13")
 
