@@ -2,7 +2,7 @@
 (source gnu)
 (source melpa-stable)
 
-(depends-on "choice-program" "0.13")
+(depends-on "choice-program" "0.14")
 
 (package-file "mark-thing-at.el")
 
