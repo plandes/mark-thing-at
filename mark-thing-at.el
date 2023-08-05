@@ -1,13 +1,13 @@
 ;;; mark-thing-at.el --- Mark a pattern at the current point  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019 Paul Landes
+;; Copyright (C) 2019 - 2023 Paul Landes
 
-;; Version: 0.3
+;; Version: 1.0
 ;; Author: Paul Landes
 ;; Maintainer: Paul Landes
 ;; Keywords: mark point lisp
 ;; URL: https://github.com/plandes/mark-thing-at
-;; Package-Requires: ((emacs "26") (choice-program "0.13"))
+;; Package-Requires: ((emacs "26") (choice-program "0.14"))
 
 ;; This file is not part of GNU Emacs.
 
