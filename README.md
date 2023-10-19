@@ -70,7 +70,7 @@ functions and what they mark:
 
 ## License
 
-Copyright (c) 2019 - 2020 Paul Landes
+Copyright (c) 2019 - 2023 Paul Landes
 
 GNU Lesser General Public License, Version 2.0
 

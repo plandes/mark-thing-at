@@ -28,10 +28,10 @@
 
 ;;; Commentary:
 
-;; This package tracks and creates bindings for region marking functions found in
-;; `thingatpt'.  The library adds on functionality that:
-;; * Generates functions that marks *things* (per the parlance of `thingatpt.el`
-;;   library.
+;; This package tracks and creates bindings for region marking functions found
+;; in `thingatpt'.  The library adds on functionality that:
+;; * Generates functions that marks *things* (per the parlance of
+;;   `thingatpt.el` library.
 ;; * Creates a mode-map and bindings to make it easy to mark (create a region
 ;;   around) a word, URL, file, number, symbol etc (see the [usage](#usage)
 ;;   section).
@@ -185,8 +185,8 @@ The functions are dynamically created with
 
 ;;;###autoload
 (define-minor-mode mark-thing-at-mode
-   "Minor mode for region marking functions found in
-`thingatpt'.  The library adds on functionality that:
+   "Minor mode for region marking functions found in `thingatpt'.
+The library adds on functionality that:
 
 * Generates functions that marks *things* (per the parlance of `thingatpt'
   library.
