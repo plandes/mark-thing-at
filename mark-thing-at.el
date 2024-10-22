@@ -1,6 +1,6 @@
 ;;; mark-thing-at.el --- Mark a pattern at the current point  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019 - 2023 Paul Landes
+;; Copyright (C) 2019 - 2024 Paul Landes
 
 ;; Version: 1.0
 ;; Author: Paul Landes
@@ -36,7 +36,6 @@
 ;;   around) a word, URL, file, number, symbol etc (see the [usage](#usage)
 ;;   section).
 ;; * Adds a *number thing*, which allows for traversing and marking numbers.
-
 
 ;;; Code:
 
@@ -178,9 +177,6 @@ The functions are dynamically created with
 ;; don't span the next line like the default 'line thing
 (put 'line-this 'beginning-op #'(lambda () (beginning-of-line)))
 (put 'line-this 'end-op #'(lambda () (end-of-line)))
-
-(mark-thing-at-make-functions)
-
 
 
 ;;;###autoload

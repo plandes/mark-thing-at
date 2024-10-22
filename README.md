@@ -20,28 +20,26 @@ make mark functions.
 
 ## Installation
 
-Add [melpa] to your package archive sources:
+To install, add [melpa] if you have not already and a `use-package`
+declaration in your `~/.emacs` file:
 
 ```emacs-lisp
+;; configure add melpa as an archive source
 (add-to-list 'package-archives
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-```
 
-To install: `M-x package-install mark-thing-at`.
-
-Activate and enable it in your `~/.emacs` file:
-
-```emacs-lisp
-;; this also creates mark commands for each thing
-(require 'mark-thing-at)
+(use-package mark-thing-at
+  :bind-keymap ("C-x m" . mark-thing-at-mode-map)
+  :config
+  (mark-thing-at-make-functions)
+  (mark-thing-at-mode 1))
 ```
 
 This binds all `mark-thing-at` functions to `C-x m`, which is the default
-prefix.  If you do not like this prefix, you can change it by customizing
-`mark-thing-at-keymap-prefix`.
-
-To do this, use: `M-x customize-variable mark-thing-at-keymap-prefix`.  Once
-you save the customization, the change immediately takes effect.
+prefix.  If you do not like this prefix, you can change it by customizing the
+prefix (`M-x customize-variable mark-thing-at-keymap-prefix`) and updating the
+`:bind-keymap` declaration.  Once you save the customization, the change
+immediately takes effect.
 
 
 ## Usage
@@ -57,7 +55,7 @@ functions and what they mark:
 | C-x m s        | mark-symbol     | Lisp symbol                                   |
 | C-x m n        | mark-number     | Integer or float number                       |
 | C-x m l        | mark-line-this  | Entire line (not including prompt in a shell) |
-| C-x l, C-x m i | mark-line       | Eentire line with the newline                 |
+| C-x m i        | mark-line       | Eentire line with the newline                 |
 | C-x m t        | mark-list       | List for the given language mode              |
 | C-M-@, C-M-SPC | mark-sexp       | Lisp symbol expression                        |
 | C-M-h          | mark-defun      | Function definition                           |
@@ -70,7 +68,7 @@ functions and what they mark:
 
 ## License
 
-Copyright (c) 2019 - 2023 Paul Landes
+Copyright (c) 2019 - 2024 Paul Landes
 
 GNU Lesser General Public License, Version 2.0
 
