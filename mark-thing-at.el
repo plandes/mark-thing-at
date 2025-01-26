@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2019 - 2025 Paul Landes
 
-;; Version: 1.1
+;; Version: 1.1.0
 ;; Author: Paul Landes
 ;; Maintainer: Paul Landes
 ;; Keywords: mark point lisp
