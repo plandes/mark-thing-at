@@ -1,8 +1,8 @@
 ;;; mark-thing-at.el --- Mark a pattern at the current point  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019 - 2024 Paul Landes
+;; Copyright (C) 2019 - 2025 Paul Landes
 
-;; Version: 1.0
+;; Version: 1.1
 ;; Author: Paul Landes
 ;; Maintainer: Paul Landes
 ;; Keywords: mark point lisp
@@ -49,6 +49,22 @@
   "A list of symbols one can use to query with `thing-at-point'.
 It is also used for functions such as `bounds-of-thing-at-point'.")
 
+(defvar mark-thing-at-descriptors
+  `((symbol . "Lisp symbol")
+    (number . "Integer or float number")
+    (line-this . "Entire line (not including prompt in a shell)")
+    (line . "Entire line with the newline ")
+    (list . "List for the given language mode")
+    (sexp . "Lisp symbol expression")
+    (,(intern "defun") . "Function definition")
+    (filename . "File name")
+    (url . "Universal resource locator")
+    (word . "Natural language word")
+    (sentence . "Natural language sentence")
+    (whitespace . "Tabs and spaces")
+    (page . "The page demarcated by ^L"))
+  "An alist of `mark-thing-at-choices' with human readable descriptions.")
+
 (defvar mark-thing-at-thing-to-command-alist nil
   "An alist of conses with the form `(THING . MARK-COMMAND)'.
 Each thing corresponds to its respective mark command.
@@ -56,6 +72,10 @@ This is set dynamically by `mark-thing-at-make-functions'.")
 
 (defvar mark-thing-at-mode-map (make-sparse-keymap)
   "Keymap of command `mark-thing-at-mode'.")
+
+(defvar mark-thing-at-descriptor-alist nil
+  "An alist with human readable information about keybindings.
+This is set dynamically by `mark-thing-at-bind'.")
 
 (defgroup mark-thing-at nil
   "Mark a pattern at the current point."
@@ -95,8 +115,7 @@ bounds.  Also see `thing-at-point' and \`mark-thing-at-choices'."
   "Return attributes for the marked thing."
   (mapcar #'(lambda (choice)
 	      `((name . ,choice)
-		(mark-func . ,(intern (format "mark-%S" choice)))
-		(binding-func . ,(intern (format "mark-%S-thing" choice)))))
+		(mark-func . ,(intern (format "mark-%S" choice)))))
 	  mark-thing-at-choices))
 
 ;;;###autoload
@@ -107,10 +126,9 @@ If this name is already that of a bound function, use `mark-*-thing'."
     (dolist (elt (mark-thing-at-attribs))
       (let ((name (cdr (assq 'name elt)))
 	    (mark-func (cdr (assq 'mark-func elt)))
-	    (binding-func (cdr (assq 'binding-func elt)))
 	    fname)
 	(setq fname (if (fboundp mark-func)
-			binding-func
+			mark-func
 		      mark-func))
 	(eval `(defun ,fname ()
 		 ,(format "Mark the current %S at point." name)
@@ -143,19 +161,82 @@ strings."
 
 (defun mark-thing-at-bind ()
   "Create keybindings for the mark-* functions.
-PREFIX is the key used for the keybinding using `global-set-key'.
-The functions are dynamically created with
+The customizable variable `mark-thing-at-keymap-prefix' is the prefix key used
+for the keybinding.  The functions are dynamically created with
 `mark-thing-at-thing-to-command-alist'."
   (let ((option-alist (mark-thing-at-make-oplist
 		       (mapcar #'symbol-name mark-thing-at-choices)))
 	(keymap (make-sparse-keymap))
-	command)
+	(prefix mark-thing-at-keymap-prefix)
+	(commands mark-thing-at-thing-to-command-alist)
+	desc-alist)
     (dolist (elt option-alist)
-      (setq command (cdr (assq (intern (car elt))
-			       mark-thing-at-thing-to-command-alist)))
-      (define-key keymap (char-to-string (cdr elt)) command))
+      (let* ((terminal-key (char-to-string (cdr elt)))
+	     (choice (intern (car elt)))
+	     (command (cdr (assq choice commands)))
+	     (desc (or (cdr (assoc choice mark-thing-at-descriptors))
+		       (capitalize (symbol-name choice)))))
+	(setq desc-alist
+	      (append desc-alist
+		      (list `((binding . ,(format "%s %s" prefix terminal-key))
+			      (command . ,command)
+			      (desc . ,desc)))))
+	(define-key keymap terminal-key command)))
     (define-key mark-thing-at-mode-map
-      (kbd mark-thing-at-keymap-prefix) keymap)))
+		(kbd mark-thing-at-keymap-prefix) keymap)
+    (setq mark-thing-at-descriptor-alist desc-alist)))
+
+(defun mark-thing-at-keybindings-help ()
+  "Create a new buffer with the key, functions and descriptions of bindings."
+  (interactive)
+  (let ((buf (get-buffer-create "*Mark Thing At Bindings*"))
+	(max-binding 0)
+        (max-func 0)
+	(max-desc 0))
+    (with-current-buffer buf
+      (read-only-mode 0)
+      (erase-buffer)
+      (dolist (entry mark-thing-at-descriptor-alist)
+        (let ((binding (cdr (assq 'binding entry)))
+              (func (symbol-name (cdr (assq 'command entry))))
+	      (desc (cdr (assq 'desc entry))))
+	  (setq max-binding (max max-binding (1+ (length binding))))
+	  (setq max-func (max max-func (length func)))
+	  (setq max-desc (max max-desc (length desc)))))
+      ;; header row
+      (insert (format (format "| %%-%ds | %%-%ds | %%-%ds |\n"
+			      max-binding max-func max-desc)
+		      "Binding" "Mark Function" "What's Marked"))
+      (insert (format (format "|%%-%ds|%%-%ds|%%s |\n" max-binding max-func)
+		      (make-string (+ max-binding 2) ?-)
+		      (make-string (+ max-func 2) ?-)
+		      (make-string (+ max-desc 1) ?-)))
+      ;; each entries
+      (dolist (entry mark-thing-at-descriptor-alist)
+        (let ((binding (cdr (assq 'binding entry)))
+              (func (symbol-name (cdr (assq 'command entry))))
+              (desc (cdr (assq 'desc entry))))
+	  (insert (format (format "| %%-%ds | %%-%ds | %%-%ds |\n"
+				  max-binding max-func max-desc)
+                          binding func desc))))
+      (read-only-mode 1))
+    (display-buffer buf)))
+
+;;;###autoload
+(defun mark-thing-at-add (name description bounds-function &optional recreatep)
+  "Add a new marker.
+NAME refers to the thing to get marked and used in the mark function name.
+DESCRIPTION is a human readable descriptor for the thing that gets marked.
+BOUNDS-FUNCTION returns a cons of the region of the text to mark.
+Recreate bindings with functions if RECREATEP is t."
+  (put name 'bounds-of-thing-at-point bounds-function)
+  (add-to-list 'mark-thing-at-choices name t)
+  (add-to-list 'mark-thing-at-descriptors `(name . ,description) t)
+  (when recreatep
+    (mark-thing-at-bind)
+    (mark-thing-at-make-functions))
+  (message "Added marker `%s' (%S)" description name))
+
 
 
 ;;; amended basic types
@@ -177,7 +258,6 @@ The functions are dynamically created with
 ;; don't span the next line like the default 'line thing
 (put 'line-this 'beginning-op #'(lambda () (beginning-of-line)))
 (put 'line-this 'end-op #'(lambda () (end-of-line)))
-
 
 ;;;###autoload
 (define-minor-mode mark-thing-at-mode

@@ -50,25 +50,63 @@ To get the current set of available mark functions and their bindings, use
 `C-x m ?` to get the listing of functions and their binding.  Here's a list of
 functions and what they mark:
 
-| Binding        | Mark Function   | What's Marked                                 |
-|----------------|-----------------|-----------------------------------------------|
-| C-x m s        | mark-symbol     | Lisp symbol                                   |
-| C-x m n        | mark-number     | Integer or float number                       |
-| C-x m l        | mark-line-this  | Entire line (not including prompt in a shell) |
-| C-x m i        | mark-line       | Eentire line with the newline                 |
-| C-x m t        | mark-list       | List for the given language mode              |
-| C-M-@, C-M-SPC | mark-sexp       | Lisp symbol expression                        |
-| C-M-h          | mark-defun      | Function definition                           |
-| C-x m f        | mark-filename   | File name                                     |
-| C-x m u        | mark-url        | Universal resource locator                    |
-| M-@            | mark-word       | Natural language word                         |
-| C-x m c        | mark-sentence   | Natural language sentence                     |
-| C-x m h        | mark-whitespace | Tabs and spaces                               |
+| Binding  | Mark Function    | What's Marked                                 |
+|----------|------------------|---------------------------------------------- |
+| C-x m s  | mark-symbol      | Lisp symbol                                   |
+| C-x m n  | mark-number      | Integer or float number                       |
+| C-x m l  | mark-line-this   | Entire line (not including prompt in a shell) |
+| C-x m i  | mark-line        | Entire line with the newline                  |
+| C-x m t  | mark-list        | List for the given language mode              |
+| C-x m e  | mark-sexp        | Lisp symbol expression                        |
+| C-x m d  | mark-defun       | Function definition                           |
+| C-x m f  | mark-filename    | File name                                     |
+| C-x m u  | mark-url         | Universal resource locator                    |
+| C-x m w  | mark-word        | Natural language word                         |
+| C-x m c  | mark-sentence    | Natural language sentence                     |
+| C-x m h  | mark-whitespace  | Tabs and spaces                               |
+| C-x m p  | mark-page        | The page demarcated by ^L                     |
+| C-x m a  | mark-latex-macro | Latex macro                                   |
+
+
+## Adding New "Things" to Mark
+
+You can add your own custom *markers* that work like those generated from the
+predefined functions in `thingatpt`.  In this example we will show to do so
+with LaTeX macros.  **Note** it is best to wrap this in a
+`with-eval-after-load` so the calls to the library are defined.  First write
+the marker function:
+
+```emacs-lisp
+;; the function that finds the extent of a LaTeX macro
+(defun latex-macro-bounds ()
+  "Return the bounds of the LaTeX macro around or at point.
+This includes the macro name and its argument braces, if present."
+  (save-excursion
+    (let ((macro-backward-regex "\\\\[a-zA-Z]+\\*?")
+	  (macro-forward-regex "[a-zA-Z]+")
+          (brace-regex "{\\([^{}]*\\)}")
+          start end)
+      (when (re-search-backward macro-backward-regex nil t)
+        (setq start (point))
+	(re-search-forward macro-forward-regex nil t)
+	(if (looking-at brace-regex)
+	    (setq end (match-end 0))
+	  (setq end (point))))
+      (when (and start end)
+        (cons start end)))))
+```
+
+Next, add it to the `mark-thing-at` library with the name, description, and the
+new function that finds the bounds:
+```emacs-lisp
+;; add the marker, a new `mark-thing' function, and its binding
+(mark-thing-at-add 'latex-macro "Latex macro" #'latex-macro-bounds t)
+```
 
 
 ## License
 
-Copyright (c) 2019 - 2024 Paul Landes
+Copyright (c) 2019 - 2025 Paul Landes
 
 GNU Lesser General Public License, Version 2.0
 

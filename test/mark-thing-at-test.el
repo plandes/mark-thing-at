@@ -9,11 +9,11 @@
 (require 'dash)
 (require 'mark-thing-at)
 
-(ert-deftest test-function-binding ()
+(ert-deftest test-functions ()
   "Test successful function binding."
   (mark-thing-at-make-functions)
   (let ((funcs (-map #'(lambda (elt)
-			 (intern (format "mark-%s-thing" elt)))
+			 (intern (format "mark-%s" elt)))
 		     mark-thing-at-choices)))
     (->> funcs
 	 (-map #'(lambda (elt)
@@ -21,10 +21,13 @@
 	 (equal (make-list (length funcs) t))
 	 should)))
 
-(ert-deftest test-function-binding ()
+(ert-deftest test-function-bindings ()
   "Test excercise keybindings."
-  (should (mark-thing-at-bind)))
+  (dolist (elt (mark-thing-at-bind))
+    (should (eq 'string (type-of (cdr (assq 'binding elt)))))
+    (should (eq 'symbol (type-of (cdr (assq 'command elt)))))
+    (should (eq 'string (type-of (cdr (assq 'desc elt)))))))
 
 (provide 'mark-thing-at-test)
 
-;;; mark-thing-at-test ends here
+;;; mark-thing-at-test.el ends here
