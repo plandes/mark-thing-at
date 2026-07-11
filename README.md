@@ -72,9 +72,7 @@ functions and what they mark:
 
 You can add your own custom *markers* that work like those generated from the
 predefined functions in `thingatpt`.  In this example we will show to do so
-with LaTeX macros.  **Note** it is best to wrap this in a
-`with-eval-after-load` so the calls to the library are defined.  First write
-the marker function:
+with LaTeX macros.  First write the marker function:
 
 ```emacs-lisp
 ;; the function that finds the extent of a LaTeX macro
@@ -103,10 +101,13 @@ new function that finds the bounds:
 (mark-thing-at-add 'latex-macro "Latex macro" #'latex-macro-bounds t)
 ```
 
+This will create the key binding as well.  To find that binding, use `C-h w
+org-latex-macro-bounds`.
+
 
 ## License
 
-Copyright (c) 2019 - 2025 Paul Landes
+Copyright (c) 2019 - 2026 Paul Landes
 
 GNU Lesser General Public License, Version 2.0
 

@@ -1,6 +1,6 @@
 ;;; mark-thing-at.el --- Mark a pattern at the current point  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019 - 2025 Paul Landes
+;; Copyright (C) 2019 - 2026 Paul Landes
 
 ;; Version: 1.1.0
 ;; Author: Paul Landes
@@ -36,6 +36,9 @@
 ;;   around) a word, URL, file, number, symbol etc (see the [usage](#usage)
 ;;   section).
 ;; * Adds a *number thing*, which allows for traversing and marking numbers.
+;;
+;; To add your own "things" to mark, see `mark-thing-at-add' and the README.md
+;; "Adding New Things to Mark section" section.
 
 ;;; Code:
 

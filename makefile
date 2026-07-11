@@ -1,6 +1,13 @@
-## makefile automates the build and deployment for Emacs Lisp projects
+#@meta {desc: "Emacs Lisp build configuration"}
 
+
+## Build system
+#
+#
 # type of project
-PROJ_TYPE=	elisp
+PROJ_TYPE =		emacs
 
+
+## Includes
+#
 include ./zenbuild/main.mk
